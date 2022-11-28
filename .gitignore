@@ -1,0 +1,9 @@
+.ipynb_checkpoints
+.nextflow*
+.vscode
+tutorials
+work/*
+Data
+Notes
+BenchmarkStudy/Output/*
+

@@ -1,0 +1,109 @@
+The student shall carefully document her/his work in a digital research  logbook. Please, oversee that this is done in a proper way and provide  instructions if necessary. The research notebook should be accessible to  the examination committee and may be evaluated as part of the 
+
+
+scIB integration metrics:
+ - iLISI and cLISI metrics range from 0 to 1. 
+ - graph iLISI, extended from iLISI (local inverse Simpson's index) = measures batch removal (batch mixing)
+    - value 0 corresponds low batch integration
+Conservation of biological variation in single-cell data can be captured at the scale of cell identity labels (label conservation) and beyond this level of annotation
+ - graph cLISI, extended from cLISI = asses local neighborhoods
+    - value 0 corresponds to low cell type separation
+
+ - clisi, sil_labels = measures bio conservation
+ - ilisi, sil_batch = measures batch correction
+
+ HypoMap
+ - hypomap evaluated harmony, scanorama, scvi, combat and seurat
+ - 17 dataset + their in house nucSeq data
+
+Seed labeling with scANVI: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/seed_labeling.html
+ - Useful when ground truth labels for a few cells and want to annotate unlabelled cells. 
+   1. Create the seed labels: groundtruth for a small fraction of cells.
+   2. Training the scANVI model: transferring annotation to the whole dataset.
+   3. Visualize the latent space and predicted labels.
+
+
+Tips for pre-processing:
+ - read data from GEO : https://docs.scvi-tools.org/en/stable/tutorials/notebooks/query_hlca_knn.html#Download-query-data
+ - Use Scanpy's reading functionality, to load outputs from Cell Ranger
+ - scVI tools require AnnData objects as input
+ - Use scanpy preprocessing to remove outliers, note normalized values not used in scvi-tools. scvi-tools require the raw counts (not log library size normalized), so keep the count information intact
+    - https://docs.scvi-tools.org/en/stable/tutorials/notebooks/tabula_muris.html#Dataset-preprocessing : Smartseq2 gene length normalization, but no cell-wise normalization
+    - filter_genes(min_counts==3) / filter_cells(min_counts==3) was done in tutorial
+    - scvi-tools expect data that has been filtered/aggregaterd in the same fashion as one would do with scanpy/seurat
+    - It is recommended to filter genes for best integration performance -> removes batch specific variation
+    - adata.raw : https://docs.scvi-tools.org/en/stable/tutorials/notebooks/tabula_muris.html#Dataset-concatenation-and-gene-selection
+ - For best practices of how/when to perform feature selection, please refer to the model-specific tutorial. For example,  For scVI,  anywhere from 1,000 to 10,000 HVGs is recommended, but it will be context-dependent.
+
+Tips for integration:
+ - scVI treats the data unlabelled, when dataset fully labelled, we can obtain an integration that better preserves biology using scANVI, which incorporates cell type annotation info
+ - Run setup_anndata with correct arguments, so that scvi-tools is notified if the dataset has batches, annotations. Otherwise the model will not correct for batch effect
+ - If the adata is modified after running setup_anndata, please run setup_anndata again, before creating an instance of a model.
+ - Store scvi-tools outputs to anndata
+ - We use UMAP to qualitatively assess our low-dimension embeddings of cells. We do not advise using UMAP or any similar approach quantitatively. We do recommend using the embeddings produced by scVI as a plug-in replacement of what you would get from PCA, as we show below
+ - scANVI can be used for daasets with partially-observed annotations. scANVI can be used also for label transfer.
+ - scANVI should be initialized from a scVI model pretrained on the same exact data
+ - scIB integration metrics to evaluate the integration performance
+
+ Tips for reference mapping:
+  - prepare_query_anndata: validates the query data is ready to be loaded into the reference model, i.e ensures data correctness.
+  - weight_decay of 0.0: to train the query data. Ensures the latent representation of the cells will remaon exactly the same if passing them through this new query model.
+  - Tools: CellAssign
+
+Notes from Gaurav's notebooks:
+01_notebook:
+ - The time point data is read in h5ad format
+ - All the timepoint data is concatenated
+ - Plotting stats
+ - Storing the count data to layer and normalizing the adata
+ - Compute hvg genes from the adata, but using the count layer for expression values instead of normalized. batch_key is specified -> hvg genes are selected within each batch separately and merged (light weight batch correction method)
+ - Training:. early stopping is used, gpu, epochs, train_size parameters are specified. Training curve plotted
+ - Model saved to file
+ - The scVI output stored to adata, this updated adata is writed to file
+ - pymde package used in visualization
+02_notebook:
+ - Integrate Novotschin and Deng datasets
+ - Preprocess datasets
+ - Deng SMART-seq data is normalized by gene length
+ - Combine datasets together and train models
+ - Trained with different parameters
+ - Save model
+ - scANVI model is initialized with pre-trained scVI-model
+ - Some cell types were omitted from Deng dataset before model training (~, tilde operator), and later on explored if these can be predicted
+ - The model is retrained with query_data (omitted cells) (transfer_learning)
+ - And then the omitted cells are predicted to the model
+
+
+Nextflow pipeline:
+ - the wf_preprocessing workflow needs to be called as many times as there are different integration methods to be benchmarked as the parameters needs to be updated
+      - Or call the corresponding processes instead
+      - This needst to be computed from the pipeline.config file
+
+ 
+
+Thoughts:
+ - Difference between de novo integration and reference mapping?
+ - When using these tools remeber to have the relevant tutorials and documentation opened.
+ - Is mapping, annotation, prediction the same thing?
+
+Questions: 
+ - What datasets to use in the benchmarking?
+ - In this example the model is first on reference dataset and then the reference model is retrained on query dataset. (https://scarches.readthedocs.io/en/latest/scvi_surgery_pipeline.html and https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html).
+      - This might be useful in situations where the model is trained on some data and new samples are received.
+
+
+Relevant links:
+ - anndata_setup: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/api_overview.html + the full documentation
+      - description of anndata_setup fields : https://docs.scvi-tools.org/en/stable/tutorials/notebooks/data_tutorial.html#scvi-tools-Data-Registration
+ - parameters which works well in integration : https://docs.scvi-tools.org/en/stable/tutorials/notebooks/harmonization.html
+   - https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html#Train-reference
+ - plotting (pymde package contains alternative to UMAP) : https://docs.scvi-tools.org/en/stable/tutorials/notebooks/harmonization.html#Integration-with-scVI
+ - filtering genes: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/tabula_muris.html#Dataset-concatenation-and-gene-selection
+ - match up colors after prediction : https://docs.scvi-tools.org/en/stable/tutorials/notebooks/tabula_muris.html#Transfer-of-annotations-with-scANVI
+ - inspect the loss curves: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/linear_decoder.html
+ - Overview of the scvi-tools : https://docs.scvi-tools.org/en/stable/user_guide/background/codebase_overview.html
+ - tips for model training : https://scarches.readthedocs.io/en/latest/training_tips.html
+
+
+Relevant papers:
+ - Latent variable: https://www.cell.com/patterns/pdf/S2666-3899(21)00001-5.pdf

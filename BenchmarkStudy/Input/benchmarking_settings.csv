@@ -1,0 +1,7 @@
+integration_method,batch,num_hvg_genes,r_output,seurat_output,scale,label_key,epochs
+scanvi,batch,2000,False,False,False,label,None
+scvi,batch,3000,False,False,False,label,50
+scgen,batch,2000,True,False,True,label2,100
+travae,,2000,-,-,False,None,None
+liger,-,2000,-,-,False,None,None
+scanorama,batch,600,False,False,False,label,None
