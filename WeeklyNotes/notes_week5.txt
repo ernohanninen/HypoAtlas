@@ -1,0 +1,35 @@
+Regarding the scib metrcis: 
+ - Cell cycle genes not in the testing adata, therefore it is false
+ - trajectory_conservation requires dpt_pseudotime column to adata
+ - hvg_score cannot be computed to trvae, might be due to low amount of genes (testing data)
+ - To run kbet metric, install kbet see scib details
+
+Before the actual integration:
+- Adjust the trvae and trvae_tl epochs
+
+
+Testing that all the integration methods works (locally and with the dataset from tutorial, as don't yet have the server access), tested methods:
+ - scvi
+ - scanvi
+ - scgen
+ - trvae
+ - trvae_tl
+ - combat
+ - conos
+ - fastmnn
+ - liger -> problem with the quantification
+ - seurat_cca
+ - seurat_rpca
+ - scanorama
+ - mnn -> kernel died
+ - desc
+ - saucie 
+ - bbknn 
+ - harmony 
+
+ After the testing, yml files were created from the each environment expect mnn
+
+
+
+Note the integration metrics are collected before each method is ready, uses the previously computed metrics (I guess), this happened when running desc and bbknn
+Remove the absolute path from jupyter_functions.py

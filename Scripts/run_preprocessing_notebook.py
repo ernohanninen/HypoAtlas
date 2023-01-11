@@ -40,25 +40,29 @@ def extract_preprocessing_settings(tool, settings_df):
     #Get the settings of specific tool and read them to variable
     method, batch, num_hvg, r_output, seurat_output, scale, label_key, epochs = settings_df.loc[settings_df["integration_method"] == tool].values[0]
     
-    num_hvg = int(num_hvg)
-
-    def str_to_bool(s):
+    # Reformat the input values from csv file
+    if num_hvg == "None" or num_hvg == None: #if num_hvg is none convert it to 0. In the preprocessing script if num_hvg is < 500, the hvg is not computed -> meaning that the all genes in dataset are used in integration
+        num_hvg = 0 
+    num_hvg = int(num_hvg) 
+    
+    #Function that converts the string true and false values to boolean
+    def str_to_bool(s): 
         if s == 'True':
             return True
         elif s == 'False':
             return False
         else:
             return s
-
     r_output = str_to_bool(r_output)
     seurat_output = str_to_bool(seurat_output)
     scale = str_to_bool(scale)
+    
     print("SETTINGS TO BE USED:")
     print(method, batch, num_hvg, r_output, seurat_output, scale)
     return  method, batch, num_hvg, r_output, seurat_output, scale #return settings
 
 #Function which updates notebook parameters
-def update_notebook_parameters(dataset, integration_method, batch, num_hvg, r_output, seurat_output, scale):
+def update_notebook_parameters(input_data_path, integration_method, batch, num_hvg, r_output, seurat_output, scale):
     #Open the preprocessing notebook
     with open("../../../BenchmarkStudy/Notebooks_to_run/run_preprocessing.ipynb") as f:
         nb = nbformat.read(f, as_version=4) #read the notebook to variable
@@ -68,7 +72,7 @@ def update_notebook_parameters(dataset, integration_method, batch, num_hvg, r_ou
     
 
     # Update one or more parameters
-    params = parameter_values(orig_parameters, method=integration_method,  file="/home/ernohanninen/master_project/Data/lungatlas.h5ad",  out = os.getcwd(), hvg=num_hvg, rout=r_output, batch=batch, seurat = seurat_output, scale = scale)
+    params = parameter_values(orig_parameters, method=integration_method,  file=os.getcwd() + "/" + input_data_path,  out = os.getcwd(), hvg=num_hvg, rout=r_output, batch=batch, seurat = seurat_output, scale = scale)
 
     # Make a notebook object with these definitions
     new_nb = replace_definitions(nb, params)
@@ -77,15 +81,15 @@ def update_notebook_parameters(dataset, integration_method, batch, num_hvg, r_ou
     nbformat.write(new_nb, fp="../../../BenchmarkStudy/Notebooks_to_run/run_preprocessing.ipynb")
     
 
-#Function which performs data preprocessing
+#Function which performs data preprocessing and returns filepath to the processed seurat or adata object
 def run_preprocessing(integration_method, r_output):
     #using jupyter nbconvert bash-command to execute the notebook, store the executed notebook to working dir 
     bashCommand = "jupyter nbconvert --to notebook --execute ../../../BenchmarkStudy/Notebooks_to_run/run_preprocessing.ipynb --output " + os.getcwd() + "/" + integration_method + "_run_preprocessing.ipynb"
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE) #Run command
     output, error = process.communicate() #Get the output
     print("OUTPUT : ", output)
-    print(type(r_output))
-    print(r_output)
+
+    #Depending of the output type return the correct output path
     if r_output == True:
         return os.getcwd() + "/" + integration_method + "_seurat.rds"
     return os.getcwd() + "/" + integration_method + "_adata.h5ad"
@@ -95,21 +99,24 @@ def run_preprocessing(integration_method, r_output):
 if __name__ == "__main__":
 
     #Read input arguments
-    dataset = sys.argv[1]
+    input_data_path = sys.argv[1]
     benchmarking_settings_file = sys.argv[2]
     tools_to_benchmark = sys.argv[3:int(len(sys.argv))]
     
     #Read the benchmarking_settings.csv file to pandas df
     settings_df = pd.read_csv(benchmarking_settings_file)
+    print(settings_df)
     
     adata_dict = {} #store the processed adata file paths to dict
     
     #loop over the tools, during every iteration call the extract_preprocessing_settings and run_preprocessing functions
     for tool in tools_to_benchmark: 
-        tool = re.sub(r'[\W_]', '', tool) #As nextflow messes the python list created in parse_methods process, remove the unwanted '[', ',' and ']' -characters from the list items    
-        method, batch, num_hvg, r_output, seurat_output, scale = extract_preprocessing_settings(tool, settings_df)  
-        update_notebook_parameters(dataset, method, batch, num_hvg, r_output, seurat_output, scale)
-        file_path = run_preprocessing(method, r_output)
+        tool = re.sub(r'[\W*]', '', tool) #As nextflow messes the python list created in parse_methods process, remove the unwanted '[', ',' and ']' -characters from the list items 
+        # '[\W_]'
+        print(tool)   
+        method, batch, num_hvg, r_output, seurat_output, scale = extract_preprocessing_settings(tool, settings_df)  #Extract settings from the input df
+        update_notebook_parameters(input_data_path, method, batch, num_hvg, r_output, seurat_output, scale) #Update parameters to notebook
+        file_path = run_preprocessing(method, r_output) #Runs preprocessing 
         adata_dict.update({tool:file_path}) #Store the preprocessed adata file path to dict 
     
     #Store the file paths to csv file

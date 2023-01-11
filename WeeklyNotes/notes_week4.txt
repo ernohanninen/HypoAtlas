@@ -1,0 +1,12 @@
+Started the dataset annotations
+
+Dataset annotation:
+ - First annotate the cells then the hypothalamic nucleus
+    - LHA, PVN, VHH
+ 
+
+Notes regarding the dataset preprocessing:
+ - keep the malat
+ - run hvg
+ - remove doublets, remove mt and rpl genes
+ - scale the data

@@ -1,0 +1,79 @@
+
+Expolore
+- sankey
+- ingest integration
+   - scanpy.tl.ingest
+      - this is for mapping, not integration
+- autoencoders 
+
+
+ - ari and nmi metrics, requires groups i.e clusters 
+   - evaluates the integration between two groups
+ - cell_cycle conservation score, are we interested?
+   - The organism needs to be specified, but now we have human and mice data
+
+
+- 50 86 day100 new100 integrate those
+
+16 for prediction
+
+- do both umap and the other, and mde
+
+
+- prediction scvi and scanvi
+- linear regression sckickt  -> track one type of cell population
+    - cell type > 
+    - human dev. brain dataset from week 5 to week 14
+    - mister dataset to day 5_9 to 14
+    - pseudotime 
+
+Thoughts: 
+  - Without label information, we don't have access to the metrics measuring biological conservation -> meaning that we don't know how much of biological variation is lost due to batch effect removal
+        - i.e we don't know what is the tradeoff between batch effect removal and biological conservation
+
+
+Output options:
+- full,  reconstructed expression data
+- embed, embedded/latent space
+- knn, corrected neighborhood graph
+
+ Issues:
+ - MNNPY -> Error: The Kernel crashed while executing code in the the current cell or a previous cell. Please review the code in the cell(s) to identify a possible cause of the failure. Click here for more info. View Jupyter log for further details.
+Canceled future for execute_request message before replies were done
+ - trvaep -> The Kernel crashed while executing code in the the current cell or a previous cell. Please review the code in the cell(s) to identify a possible cause of the failure. Click here for more info. View Jupyter log for further details.
+Canceled future for execute_request message before replies were done
+ - trvae -> The code is running, it gives some warnings, doesn't print the training process -> runs for hours and noting seems to happen
+ - LIGER -> problems with the code
+
+ - scanorama,combat, fastmnn, desc, saucie works only with output option full
+ - For bbknn, conos all output options works
+ - For harmony, full and embed output options works
+embed output for scanorama, combat, fastmnn, desc, saucie:
+ - KeyError: 'X_pca'
+knn output for for scanorama, combat, fastmnn, desc, saucie, harmony:
+ -  Did not find .uns["neighbors"]. Run `sc.pp.neighbors` first.
+-> use full output option with all the methods 
+
+
+notes of label free metrics: 
+
+hvg_overlap
+ - Metric that computes the average percentage of overlapping highly variable genes per batch pre post integration.
+ - Proxy of preserved biological signal
+
+pcr_comparison
+ - Computes the principal component regression score 
+ - Compares the explained variance before and after integration
+ - Measures batch removal
+ - Returns a score between 0-1, where 0 means no change in variance contribution. The higher the score, the more different the variance contributions are before and after integration 
+ - if pcr score is 0 or close to zero this means that there is little difference in batch effect -> doesn't necessarily mean that the integration was bad, because it might be because of low batch effect in the original dataset
+ - PCR can only capture linear effects, so it might miss more complicated batch effects
+ - If batches differs in biological factors pcr score does not have to be 0
+ - https://github.com/theislab/scib/issues/290
+
+ilisi_score
+ - Measures batch removal
+ - Returns value between 0 and 1
+ - Higher value -> more batch effect has been corrected
+
+
