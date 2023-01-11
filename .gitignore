@@ -6,4 +6,6 @@ work/*
 Data
 Notes
 BenchmarkStudy/Output/*
-
+*pycache*
+*.html
+*.pdf
