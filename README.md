@@ -53,7 +53,7 @@ conda create --name mnn_env jupyter==1.0.0 mnnpy scanpy pip scipy==1.8.1 && cond
 
 
 - scanorama: scanorama_env, created by running:
-`conda create --name scanorama_env python-annoy python==3.10.9 pip scanpy && git clone https://github.com/brianhie/scanorama.git && cd scanorama/ && python setup.py install --user && conda install R && conda deactivate`
+` conda create --name scanorama_env scanpy python-annoy && conda activate scanorama_env && conda install -c bioconda scanorama`
 
 
 - SCVI: PYenv, scvi-tools are already installed in PYenv, therefore using it to run scvi-algorithm
