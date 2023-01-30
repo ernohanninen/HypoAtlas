@@ -2,10 +2,11 @@
 .nextflow*
 .vscode
 tutorials
-work/*
 Data
 Notes
-BenchmarkStudy/Output/*
+Benchmarking_pipeline/Output/*
+Benchmarking_pipeline/work/*
+DataProcessing/work/*
 *pycache*
 *.html
 *.pdf

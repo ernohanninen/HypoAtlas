@@ -1,8 +1,8 @@
 name: combat_env
 channels:
-  - defaults
-  - bioconda
   - conda-forge
+  - bioconda
+  - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
   - _openmp_mutex=5.1=1_gnu
@@ -199,4 +199,4 @@ dependencies:
     - tzlocal==4.2
     - umap-learn==0.5.3
     - wrapt==1.14.1
-prefix: /home/ernohanninen/miniconda3/envs/combat_env
+prefix: /home/bns631/.conda/envs/combat_env
