@@ -1,8 +1,8 @@
 name: Renv
 channels:
-  - defaults
-  - bioconda
   - conda-forge
+  - bioconda
+  - defaults
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=2_kmp_llvm
@@ -202,6 +202,7 @@ dependencies:
   - python-fastjsonschema=2.16.2=py310h06a4308_0
   - python_abi=3.10=2_cp310
   - pytz=2022.1=py310h06a4308_0
+  - pyyaml=6.0=py310h5eee18b_1
   - pyzmq=23.2.0=py310h6a678d5_0
   - qt-main=5.15.2=h327a75a_7
   - qt-webengine=5.15.9=hd2b0992_4
@@ -454,5 +455,4 @@ dependencies:
   - zstd=1.5.2=ha4553b6_0
   - pip:
     - pyqt5-sip==12.11.0
-    - pyyaml==6.0
-prefix: /home/ernohanninen/miniconda3/envs/Renv
+prefix: /home/bns631/.conda/envs/Renv

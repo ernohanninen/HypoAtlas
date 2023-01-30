@@ -23,7 +23,7 @@ Below the bash commands used to build the different environments, as well as, th
 
 
 To build the Conda PYenv environment following command was executed:
-`conda create --name PYenv pip && conda activate PYenv && conda install pip pymde==0.1.18 scvi-tools=0.19.0 jupyter==1.0.0 nbconvert==7.2.5 && pip install nbparameterise==0.5 scib==1.0.4 && conda install -c bioconda bioconductor-s4vectors && conda install -c bioconda bioconductor-singlecellexperiment==1.20.0 && conda install -c bioconda r-seurat==4.3.0 && pip install scgen trvaep && pip install papermill && pip install scrublet && pip install scArches`
+`conda create --name PYenv pip && conda activate PYenv && conda install pip pymde==0.1.18 scvi-tools=0.19.0 jupyter==1.0.0 nbconvert==7.2.5 && pip install nbparameterise==0.5 scib==1.0.4 && conda install -c bioconda bioconductor-s4vectors && conda install -c bioconda bioconductor-singlecellexperiment==1.20.0 && conda install -c bioconda r-seurat==4.3.0 && pip install scgen trvaep && pip install papermill && pip install scrublet && pip install scArches && pip install scib-metrics && pip install pyliger && pip install plotnine && pip install mygene && conda install goatools`
 
 
 
@@ -37,15 +37,15 @@ conda create --name mnn_env jupyter==1.0.0 mnnpy scanpy pip scipy==1.8.1 && cond
 
 
 - desc: desc_env, created by running:
-`conda create --name desc_env pip python && conda activate desc_env && pip install desc jupyter tensorflow && git clone https://github.com/theislab/scib.git && cd scib && pip install -e . && conda install rpy2 && conda deactivate`
+`conda create --name desc_env pip python && conda activate desc_env && pip install desc jupyter tensorflow && git clone https://github.com/theislab/scib.git && cd scib && pip install -e . && conda install rpy2 && conda install -c anaconda graphviz && conda deactivate`
 
 
-- saucie: saucie_env, created by running:
-1. installing the saucie dependencies, scib and jupyter, and cloning the repo:
-`conda create --name saucie_env pip tensorflow==1.14 python==3.7 pandas==1.3.5 && conda activate saucie_env && pip install fcsparser fcswrite numpy scikit-learn matplotlib jupyter && git clone https://github.com/theislab/scib.git && cd scib && pip install -e . && cd .. && git clone https://github.com/KrishnaswamyLab/SAUCIE && pip install louvain && conda deactivate`
+- saucie: saucie_env, created by running (run this command on):
+`conda create --name saucie_env pip tensorflow==1.14 python==3.7 pandas==1.3.5 && conda activate saucie_env && pip install fcsparser fcswrite numpy scikit-learn matplotlib jupyter && git clone https://github.com/KrishnaswamyLab/SAUCIE && pip install louvain && conda deactivate`
+
 
 - bbknn: bbknn_env, created by running:
-`conda create --name bbknn_env jupyter==1.0.0 pip && conda activate bbknn_env && git clone https://github.com/theislab/scib.git && cd scib && pip install -e . && pip install scib[bbknn] && pip install louvain && conda deactivate`
+`conda create --name bbknn_env jupyter==1.0.0 python==3.10.9 pip python-annoy && conda activate bbknn_env && pip install scib scib[bbknn] && pip install louvain && conda deactivate`
 
 
 - harmony: harmony_env in where the scib package is installed from source as the scib 1.0.4 version from pypi doesn't contain harmony. The environment was created by running: 
@@ -53,7 +53,7 @@ conda create --name mnn_env jupyter==1.0.0 mnnpy scanpy pip scipy==1.8.1 && cond
 
 
 - scanorama: scanorama_env, created by running:
-`conda create --name scanorama_env python-annoy pip && conda activate scanorama_env && pip install scib jupyter && git clone https://github.com/brianhie/scanorama.git && cd scanorama/ && python setup.py install --user && conda install R && conda deactivate`
+`conda create --name scanorama_env python-annoy python==3.10.9 pip && conda activate scanorama_env && pip install jupyter scib && git clone https://github.com/brianhie/scanorama.git && cd scanorama/ && python setup.py install --user && conda install R && conda deactivate`
 
 
 - SCVI: PYenv, scvi-tools are already installed in PYenv, therefore using it to run scvi-algorithm
@@ -78,6 +78,18 @@ Set up R Jupyter Notebooks in VS code
 
 2. Add the R-kernel to jupyter by installing kernelspec:
 R -e 'IRkernel::installspec()
+
+
+##### Environment troubleshooting
+Regardless if the environment was builded from yml file or using the bash command "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lisi_yx5qtexs/graph_lisi_indices_0.txt'" - error might occur. To overcome the error knn_graph.o function needs to be recomplied.
+
+Navigate to the knn_graph folder suggested in the error message
+
+For example:
+`cd ~/HypoAtlas/scib/knn_graph/`
+
+Recompile the function with following command:
+`g++ -std=c++11 -O3 knn_graph.cpp -o knn_graph.o`
 
 
 
@@ -112,13 +124,40 @@ R -e 'IRkernel::installspec()
 9. combat_env
 `conda activate combat_env && conda env export > combat_env.yml && conda deactivate`
 
+10. mnn_env
+`conda create --name mnn_env numba==0.45.0 mnnpy`
+
+11. RConvertEnv
+`conda create --name RConvertEnv r-seurat r-seuratdisk`
+
+
+
+
 When the pipeline is cloned to server, the environments can be created from the yaml files.
 
+
+
+#### Data
+Data was processed on Cortex server. Data was loaded to /home/bns631/data/herb_raw_data
+
+Load all the raw time point data:
+wget https://data.nemoarchive.org/biccn/grant/u01_devhu/kriegstein/transcriptome/scell/10x_v2/human/processed/analysis/Herb_2022_Hypothalamus/SeuratObj/HypoSamples_AllCells.rda
 
 
 
 
 #### Data
+
+Steps to load the zhou data (executed in dir with only zhou data):
+`wget "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE169nnn/GSE169109/suppl/GSE169109_barcodes.tsv.gz" && wget "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE169nnn/GSE169109/suppl/GSE169109_features.tsv.gz" && wget "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE169nnn/GSE169109/suppl/GSE169109_matrix.mtx.gz"`
+
+
+
+
+
+
+
+
 The human hypothalamus data from Herb et al. study was downloaded from https://assets.nemoarchive.org/dat-8ovb8mx
 
 1. Navigate to the folder where the dataset is loaded
@@ -142,7 +181,7 @@ The human hypothalamus data from Herb et al. study was downloaded from https://a
 `cd Analysis_Herb_Ament_Human_Development_Hypothalamus_Counts/Raw_data_Herb_Ament_Human_Development_Hypothalamus_Counts/data`
 
 6. Unzip the hypothalamus files:
-`tar -xzf CS13_prosencephalon.mex.tar.gz && tar -xzf CS14_cortex.mex.tar.gz && tar -xzf CS15_forebrain.mex.tar.gz && tar -xzf CS20_hypothalamus1.mex.tar.gz && tar -xzf CS22_2_hypothalamus.mex.tar.gz && tar -xzf CS22_Hypothalamus.mex.tar.gz && tar -xzf GW18_hypothalamus.mex.tar.gz && tar -xzf GW19_hypothalamus.mex.tar.gz && tar -xzf GW20_hypothalamus.mex.tar.gz && tar -xzf GW22T_hypo1.mex.tar.gz && tar -xzf GW25_3V_hypo.mex.tar.gz`
+`tar -xzf CS13_prosencephalon.mex.tar.gz && tar -xzf CS14_cortex.mex.tar.gz && tar -xzf CS15_forebrain.mex.tar.gz && tar -xzf CS20_hypothalamus1.mex.tar.gz && tar -xzf CS22_2_hypothalamus.mex.tar.gz && tar -xzf CS22_Hypothalamus.mex.tar.gz && tar -xzf GW18_hypothalamus.mex.tar.gz && tar -xzf GW19_hypothalamus.mex.tar.gz && tar -xzf GW20_hypothalamus.mex.tar.gz && tar -xzf GW22T_hypo1.mex.tar.gz && tar -xzf GW25_3V_hypo.mex.tar.gz && `
 
 
 
