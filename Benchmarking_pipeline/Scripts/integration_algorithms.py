@@ -2,26 +2,26 @@ import scanpy as sc
 import numpy as np
 
 
-def scanorama(data_path, output_path):
+def scanorama(data_path, output_path, batch):
     import scanorama
     adata = sc.read(data_path)
     # List of adata per batch
     
     
-    batch_cats = adata.obs.batch.cat.categories
-    adata_list = [adata[adata.obs.batch == b].copy() for b in batch_cats]
+    batch_cats = adata.obs[batch].cat.categories
+    adata_list = [adata[adata.obs[batch] == b].copy() for b in batch_cats]
     scanorama.integrate_scanpy(adata_list)
 
     adata.obsm["scanorama"] = np.zeros((adata.shape[0], adata_list[0].obsm["X_scanorama"].shape[1]))
     for i, b in enumerate(batch_cats):
-        adata.obsm["scanorama"][adata.obs.batch == b] = adata_list[i].obsm["X_scanorama"]    
+        adata.obsm["scanorama"][adata.obs[batch] == b] = adata_list[i].obsm["X_scanorama"]
     
     adata.write(output_path + "scanorama_adata.h5ad")
 
-def liger(data_path, output_path):
+def liger(data_path, output_path, batch):
     
     adata = sc.read(data_path)
-    batch_cats = adata.obs.batch.cat.categories
+    batch_cats = adata.obs[batch].cat.categories
     
     import pyliger
     
@@ -30,7 +30,7 @@ def liger(data_path, output_path):
     # So here we give it the count data
     bdata.X = bdata.layers["counts"]
     # List of adata per batch
-    adata_list = [bdata[bdata.obs.batch == b].copy() for b in batch_cats]
+    adata_list = [bdata[bdata.obs[batch] == b].copy() for b in batch_cats]
     for i, ad in enumerate(adata_list):
         ad.uns["sample_name"] = batch_cats[i]
         # Hack to make sure each method uses the same genes
@@ -48,7 +48,7 @@ def liger(data_path, output_path):
 
     adata.obsm["liger"] = np.zeros((adata.shape[0], liger_data.adata_list[0].obsm["H_norm"].shape[1]))
     for i, b in enumerate(batch_cats):
-        adata.obsm["liger"][adata.obs.batch == b] = liger_data.adata_list[i].obsm["H_norm"]
+        adata.obsm["liger"][adata.obs[batch] == b] = liger_data.adata_list[i].obsm["H_norm"]
         
     adata.write(output_path + "liger_adata.h5ad")
     
@@ -71,8 +71,8 @@ def scvi(data_path, output_path, batch):
     adata = sc.read(data_path)
 
     scvi.model.SCVI.setup_anndata(adata, layer="counts", batch_key=batch)
-    vae = scvi.model.SCVI(adata, gene_likelihood="nb", n_layers=2, n_latent=30)
-    vae.train(max_epochs=10)
+    vae = scvi.model.SCVI(adata, gene_likelihood="nb", n_layers=2, n_latent=30, n_hidden=128)
+    vae.train(max_epochs=None)
     adata.obsm["scvi"] = vae.get_latent_representation()    
     adata.write(output_path + "scvi_adata.h5ad")
     
@@ -81,10 +81,11 @@ def scanvi(data_path, output_path, batch, label_key):
     import scvi
     
     adata = sc.read(data_path)
+    print(adata)
     
     scvi.model.SCVI.setup_anndata(adata, layer="counts", batch_key=batch)
-    vae = scvi.model.SCVI(adata, gene_likelihood="nb", n_layers=2, n_latent=30)
-    vae.train(max_epochs=10)
+    vae = scvi.model.SCVI(adata, gene_likelihood="nb", n_layers=2, n_latent=30, n_hidden=128)
+    vae.train(max_epochs=None)
     
     lvae = scvi.model.SCANVI.from_scvi_model(
         vae,
@@ -124,8 +125,7 @@ def desc(data_path, output_path, batch):
         save_encoder_weights=False,
         save_dir=tmp_dir,
         do_tsne=False,
-        use_GPU=False,
-        num_Cores=5,
+        use_GPU=True,
         use_ae_weights=False,
         do_umap=False,
     )
@@ -174,7 +174,7 @@ def scgen(data_path, output_path, batch, label_key):
     
     #Training
     model.train(
-        max_epochs=10,
+        max_epochs=None,
         batch_size=32,
         early_stopping=True,
         early_stopping_patience=25,
@@ -195,10 +195,10 @@ def trvae(data_path, output_path, batch, label):
     adata = sc.read(data_path)
     
     #Get target condition (the dominant batch covariate)
-    target_condition = list(adata.obs[batch].value_counts().idxmax())
-    
-    trvae_epochs = 50
-    surgery_epochs = 50
+    target_condition = adata.obs[batch].value_counts().index[0]
+
+    trvae_epochs = 500
+    surgery_epochs = 500
 
     early_stopping_kwargs = {
         "early_stopping_metric": "val_unweighted_loss",
@@ -215,8 +215,8 @@ def trvae(data_path, output_path, batch, label):
     #adata = adata.raw.to_adata()
     adata = remove_sparsity(adata) #if adata.X is sparse matrix -> converts it in to normal matrix
 
-    source_adata = adata[~adata.obs[batch].isin(target_condition)]
-    target_adata = adata[adata.obs[batch].isin(target_condition)]
+    source_adata = adata[~adata.obs[batch].isin([target_condition])]
+    target_adata = adata[adata.obs[batch].isin([target_condition])]
 
     #Get source conditions (all batches of the data)
     source_conditions = source_adata.obs[batch].unique().tolist()

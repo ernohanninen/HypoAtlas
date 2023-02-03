@@ -2,7 +2,7 @@
 
 
 
-seurat_cca = function(data, batch, hvg=501) {
+seurat_cca = function(data, batch, hvg=2000) {
 
 	  batch_list = SplitObject(data, split.by = batch)
 
@@ -36,7 +36,7 @@ seurat_cca = function(data, batch, hvg=501) {
 
 # This function is from https://github.com/theislab/scib-pipeline/blob/0c7be53b1000864fcd31a7b7594f9a5071204233/scripts/integration/integration.R
 #runSeuratRPCA = function(data, batch, hvg=2000) {
-seuratRPCA = function(data, batch, hvg=500) {
+seuratRPCA = function(data, batch, hvg=2000) {
      
     batch_list = SplitObject(data, split.by = batch)
         #features <- SelectIntegrationFeatures(batch_list)

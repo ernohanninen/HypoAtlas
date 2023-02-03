@@ -10,3 +10,4 @@ DataProcessing/work/*
 *pycache*
 *.html
 *.pdf
+*.h5ad

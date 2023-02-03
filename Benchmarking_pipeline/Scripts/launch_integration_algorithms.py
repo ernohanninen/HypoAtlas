@@ -6,8 +6,8 @@ import pandas as pd
 
 
 def call_algorithm(data_path, tool, output_path, batch, label_key):
-    if tool == "scanorama": scanorama(data_path, output_path)
-    elif tool == "liger": liger(data_path, output_path)
+    if tool == "scanorama": scanorama(data_path, output_path,batch)
+    elif tool == "liger": liger(data_path, output_path,batch)
     elif tool == "harmony": harmony(data_path, output_path, batch)
     elif tool == "scvi": scvi(data_path, output_path, batch)
     elif tool == "scanvi": scanvi(data_path, output_path, batch, label_key)

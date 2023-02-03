@@ -77,6 +77,7 @@ def extract_preprocessing_settings(tool, settings_df):
     
 def run_preprocessing(input_data_path, method, batch, num_hvg, scale, r_output, seurat_output):
     adata = sc.read(input_data_path)
+    #adata.uns["log1p"] = {"base":None}
     hvgs = adata.var.index
     
     print("input_data_path: ", input_data_path)
@@ -164,12 +165,14 @@ if __name__ == "__main__":
         adata_dict.update({tool:file_path}) #Store the preprocessed adata file path to dict 
     
     adata = sc.read(input_data_path)
+    #adata.uns["log1p"] = {"base":None}
+
     adata = scib.preprocessing.hvg_batch(adata,batch_key=batch,target_genes=num_hvg,adataOut=True)
     sc.tl.pca(adata, n_comps=30, use_highly_variable=True)
     
     
     adata.obsm["unintegrated"] = adata.obsm["X_pca"]
-    
+        
     print("ADATA UNINTEGRATED: ", adata)
     print("adata.X: ", adata.X)
     print("adata.layers[counts]: ", adata.layers["counts"])

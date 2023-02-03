@@ -15,7 +15,7 @@ envDir = "$HOME/.conda/envs" // Requires miniconda3 in home dir
 //Process that returns list of methods to be benchmarked
 process parse_methods {
     //Conda environment to be used
-    conda "$envDir/PYenv"
+    conda "$envDir/PY_env"
 
     output: //Outputs the standard output of the executed process.
         stdout
@@ -35,7 +35,7 @@ process parse_methods {
 //Process that runs data processing, and returns the preprocessed adata files, the executed preprocessing notebooks for each method to be benchmarked, and .csv file containing paths to the preprocessed adata for each method to be benchmarked
 process preprocessing{
     //Conda environment to be used
-    conda "$envDir/PYenv"
+    conda "$envDir/PY_env"
 
     //Create the output dir for the process
     publishDir "Output/Preprocessing/Notebooks", mode:"copy", overwrite:true, pattern: "*.ipynb"
@@ -67,7 +67,7 @@ process preprocessing{
 
 process run_scvi{
     //Conda environment to be used
-    conda "$envDir/PYenv"
+    conda "$envDir/PY_env"
 
     publishDir "Output/Integration/Integrated_adata/", mode:"copy", overwrite:true, pattern: "*.h5ad"
 
@@ -97,7 +97,7 @@ process run_scanvi{
     //Conda environment to be used
     publishDir "Output/Integration/Integrated_adata/", mode:"copy", overwrite:true, pattern: "*.h5ad"
 
-    conda "$envDir/PYenv"
+    conda "$envDir/PY_env"
 
     input:
         val(algorithm)
@@ -244,7 +244,7 @@ process run_liger{
 
     publishDir "Output/Integration/Integrated_adata/", mode:"copy", overwrite:true, pattern: "*.h5ad"
 
-    conda "$envDir/PYenv"
+    conda "$envDir/PY_env"
 
     //Create the output dir for the process
     input:
@@ -333,7 +333,7 @@ process run_scgen{
     publishDir "Output/Integration/Integrated_adata/", mode:"copy", overwrite:true, pattern: "*.h5ad"
 
     //Conda environment to be used
-    conda "$envDir/PYenv"
+    conda "$envDir/PY_env"
 
     //Create the output dir for the process
     input:
@@ -362,7 +362,7 @@ process run_trvae{
     publishDir "Output/Integration/Integrated_adata/", mode:"copy", overwrite:true, pattern: "*.h5ad"
 
     //Conda environment to be used
-    conda "$envDir/PYenv"
+    conda "$envDir/PY_env"
 
     //Create the output dir for the process
     input:
@@ -562,7 +562,7 @@ process convert_rds_output{
 
 process parametrize_plotting_notebook{
     //Conda environment to be used
-    conda "$envDir/PYenv"
+    conda "$envDir/PY_env"
     publishDir "Output/Integration/Notebooks", mode:"copy", overwrite:true, pattern: "*.ipynb"
 
     //Create the output dir for the process
@@ -590,7 +590,7 @@ process parametrize_plotting_notebook{
 
 process run_results_notebook{
     //Conda environment to be used
-    conda "$envDir/PYenv"
+    conda "$envDir/PY_env"
 
     //Create the output dir for the process
     publishDir "Output/Integration/Notebooks", mode:"copy", overwrite:true, pattern: "*.ipynb"
