@@ -167,6 +167,9 @@ Now when we have the Jupyter server running navigate to the `Spatial_mapping` fo
 
 
 ## Limitations
+- The benchmarking pipeline contains an implementation of methods which due to installation issues were not benchmarked in this project. To avoid errors, it is required that in 'pipeline.config' file the following variables have the value 'false': 'benchmark_mnn', 'benchmark_saucie', and 'benchmark_conos'. In the future, the code snippets for these algorithms will be removed.
+- We observed strange integration results for DESC and trVAE algorithms, indicating either that the tools are implemented incorrectly, or that these are inadequate for complex integration task
+- Both the data processing and benchmarking pipeline utilizes scib.pp.read_seurat function to read RDS files to Python. After running the analysis we have encountered errors when using the function. This is most likely since the PYenv (the main environment for this project) has been updated with new packages frequently, and the dependencies for this function are not up-to-date. In case the pipeline is used in future projects, a workaround for this is required, since with the current configuration is it not executable. 
 
 
 
