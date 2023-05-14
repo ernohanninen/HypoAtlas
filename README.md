@@ -15,7 +15,7 @@ Clone the repository:
 
 From now on it's assumed the user is located in the ~/HypoAtlas folder
 
-To reproduce the results installations of Conda and Nextflow are required. Here Conda (4.10.1) and Nextflow (22.10.6.5843) were used since they were preinstalled in the computing environment used. 
+To reproduce the results installations of Conda and Nextflow are required. Here Conda (4.10.1) and Nextflow (22.10.6.5843) were used since they were preinstalled into DanGPU. 
 
 All the dependencies of the pipelines and scripts are managed using Conda environments. Due to conflicting packages, multiple environments need to be set up. To achieve this run:
 ```
