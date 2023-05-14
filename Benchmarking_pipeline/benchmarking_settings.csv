@@ -1,0 +1,17 @@
+integration_method,batch,num_hvg_genes,r_output,seurat_output,scale,label_key
+scanvi,sample,2000,False,False,False,Cell_types_2
+scvi,sample,2000,False,False,False,Cell_types_2
+scgen,sample,2000,False,False,False,Cell_types_2
+trvae,sample,2000,False,False,False,Cell_types_2
+scanorama,sample,2000,False,False,True,Cell_types_2
+conos,sample,2000,True,True,False,Cell_types_2
+fastmnn,sample,2000,True,True,False,Cell_types_2
+bbknn,sample,2000,False,False,False,Cell_types_2
+combat,sample,2000,False,False,False,Cell_types_2
+desc,sample,2000,False,False,False,Cell_types_2
+harmony,sample,2000,False,False,False,Cell_types_2
+mnn,sample,2000,False,False,True,Cell_types_2
+saucie,sample,2000,False,False,True,Cell_types_2
+liger,sample,2000,False,False,False,Cell_types_2
+seurat_cca,sample,2000,True,True,False,Cell_types_2
+seurat_rpca,sample,2000,True,True,True,Cell_types_2

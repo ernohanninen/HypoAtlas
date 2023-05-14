@@ -1,12 +1,3 @@
-//input data in h5ad format
-params.input_data_path = "../DataProcessing_pipeline/Data/Processed/merged_zhou_herb.h5ad"
-params.benchmarking_settings = "$projectDir/benchmarking_settings.csv"
-
-//Processes to run
-//Set true to processes to be executed
-params.run_benchmarking = true
-
-//If run_benchmarking = true, select the methods to benchmark:
 params.benchmark_scanvi = true
 params.benchmark_scvi = true
 params.benchmark_scanorama = true
@@ -17,10 +8,9 @@ params.benchmark_desc = true
 params.benchmark_saucie = false
 params.benchmark_bbknn = true
 params.benchmark_harmony = true
-params.benchmark_scgen = true
+params.benchmark_scgen = false
 params.benchmark_trvae  = true
 params.benchmark_conos = false
 params.benchmark_fastmnn = true
 params.benchmark_seurat_cca = true
 params.benchmark_seurat_rpca = true
-

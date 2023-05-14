@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env Rscript
 
 #Author: Erno Hänninen
-#Created: 2023-22-01
-#Title: convert_to_h5ad.py
+#Created: 11.12.2022
+#Title: convert_to_h5ad.R
 
 #Description:
 #    - loads seurat object to R and converts to h5ad file

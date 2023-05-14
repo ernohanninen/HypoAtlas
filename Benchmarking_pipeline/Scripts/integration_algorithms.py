@@ -1,13 +1,40 @@
+"""
+Author: Erno Hänninen
+
+Created: 12.01.2023
+
+Title: integration_algorithms.py
+
+Description:
+- Script containing the integration algorithms written in python
+- Contains scanorama, liger, harmony, scvi, scanvi, desc, combat, bbknn, scgen, trvae, mnn, saucie
+
+Procedure
+- Integration algorithms are implemented as functions
+- The function is called from launch_integration_algorithms.py script
+- After the function is executed the result is writed to output folder
+    
+Additional information:
+ - These functions are either copied / slightly adapted versions of scib-pipeline's source code OR implemented based on existing tutorials
+
+List of non-standard modules:
+-scanpy, numpy, scanorama, pyliger, harmony, scvi, desc, tempfile, bbknn, scgen, torch, scarches, mnnpy
+
+Usage:
+- This script is launched from the pipeline (launch_integration_algorithms.py)
+"""
+
+
 import scanpy as sc
 import numpy as np
 
 
+################################## scanorama #############################################################
+
 def scanorama(data_path, output_path, batch):
     import scanorama
     adata = sc.read(data_path)
-    # List of adata per batch
-    
-    
+
     batch_cats = adata.obs[batch].cat.categories
     adata_list = [adata[adata.obs[batch] == b].copy() for b in batch_cats]
     scanorama.integrate_scanpy(adata_list)
@@ -17,6 +44,9 @@ def scanorama(data_path, output_path, batch):
         adata.obsm["scanorama"][adata.obs[batch] == b] = adata_list[i].obsm["X_scanorama"]
     
     adata.write(output_path + "scanorama_adata.h5ad")
+
+
+################################## liger #############################################################
 
 def liger(data_path, output_path, batch):
     
@@ -52,6 +82,8 @@ def liger(data_path, output_path, batch):
         
     adata.write(output_path + "liger_adata.h5ad")
     
+    
+################################## harmony #############################################################
 
 def harmony(data_path, output_path, batch):
     from harmony import harmonize
@@ -63,6 +95,7 @@ def harmony(data_path, output_path, batch):
     adata.write(output_path + "harmony_adata.h5ad")
     
     
+################################## scvi #############################################################
 
 def scvi(data_path, output_path, batch):
     
@@ -77,6 +110,8 @@ def scvi(data_path, output_path, batch):
     adata.write(output_path + "scvi_adata.h5ad")
     
     
+################################## scanvi #############################################################
+
 def scanvi(data_path, output_path, batch, label_key):
     import scvi
     
@@ -99,6 +134,8 @@ def scanvi(data_path, output_path, batch, label_key):
     adata.write(output_path + "scanvi_adata.h5ad")
     
     
+################################## desc #############################################################
+ 
 def desc(data_path, output_path, batch):
     
     #ImportError: You must install pydot (`pip install pydot`) and install graphviz (see instructions at https://graphviz.gitlab.io/download/) for plot_model to work.
@@ -135,6 +172,8 @@ def desc(data_path, output_path, batch):
     adata.write(output_path + "desc_adata.h5ad")
 
 
+################################## combat #############################################################
+
 def combat(data_path, output_path, batch):
     adata = sc.read(data_path)
     adata_int = adata.copy()
@@ -144,6 +183,8 @@ def combat(data_path, output_path, batch):
     
     adata.write(output_path + "combat_adata.h5ad")
 
+
+################################## bbknn #############################################################
 
 def bbknn(data_path, output_path, batch):
     import bbknn
@@ -161,6 +202,9 @@ def bbknn(data_path, output_path, batch):
     print(adata)
     adata.write(output_path + "bbknn_adata.h5ad")
     
+    
+    
+################################## scgen #############################################################
 
 def scgen(data_path, output_path, batch, label_key):
     import scgen 
@@ -186,6 +230,9 @@ def scgen(data_path, output_path, batch, label_key):
     print(adata.obsm["scgen"])
     
     adata.write(output_path + "scgen_adata.h5ad")
+
+
+################################## trvae #############################################################
 
 def trvae(data_path, output_path, batch, label):
     from scarches.dataset.trvae.data_handling import remove_sparsity
@@ -271,7 +318,9 @@ def trvae(data_path, output_path, batch, label):
     
     adata.write(output_path + "trvae_adata.h5ad")
     
-        
+     
+################################## mnn #############################################################
+   
 def mnn(data_path, output_path, batch, hvg=None):
     import mnnpy
     adata = sc.read(data_path)
@@ -306,7 +355,8 @@ def mnn(data_path, output_path, batch, hvg=None):
     adata.write(output_path + "mnn_adata.h5ad")
     
     
-    
+################################## saucie #############################################################
+ 
 def saucie(data_path, output_path, batch):
 
     adata = sc.read(data_path)

@@ -1,7 +1,26 @@
+# Created: 10.01.2023
+
+# Title: integration_algorithms.R
+
+#Description:
+# - Script containing the integration algorithms written in R 
+# - contains seurat (CCA, RPCA), conos, fastmnn
+
+#Procedure
+# - Integration algorithms are implemented as functions
+# - The function is called from launch_R_integration_algorithms.R script
+# - After the function is executed the result is returned
+
+# Additional information:
+# - These functions are copied from the source code of scib-pipeline
+
+#Usage:
+# - The script is launched from the pipeline (launch_R_integration_algorithms.R )
 
 
+################################## seurat cca #############################################################
 
-
+# This function is from https://github.com/theislab/scib-pipeline/blob/0c7be53b1000864fcd31a7b7594f9a5071204233/scripts/integration/integration.R
 seurat_cca = function(data, batch, hvg=2000) {
 
 	  batch_list = SplitObject(data, split.by = batch)
@@ -34,12 +53,13 @@ seurat_cca = function(data, batch, hvg=2000) {
 	  return(integrated)
 }
 
+
+#################################################### Seurat RPCA #####################################################################
+
 # This function is from https://github.com/theislab/scib-pipeline/blob/0c7be53b1000864fcd31a7b7594f9a5071204233/scripts/integration/integration.R
-#runSeuratRPCA = function(data, batch, hvg=2000) {
 seuratRPCA = function(data, batch, hvg=2000) {
      
     batch_list = SplitObject(data, split.by = batch)
-        #features <- SelectIntegrationFeatures(batch_list)
         batch_list <- lapply(X = batch_list, FUN = function(x) {
         x  <- ScaleData(x, features = hvg)
         x <- RunPCA(x, features = hvg)
@@ -74,6 +94,9 @@ seuratRPCA = function(data, batch, hvg=2000) {
     return(integrated)
 }
 
+
+#################################################### Conos #####################################################################
+
 #This function is from https://github.com/theislab/scib-pipeline/blob/0c7be53b1000864fcd31a7b7594f9a5071204233/scripts/integration/integration.R
 preP <- function(so, vars.to.regress=NULL, verbose=TRUE, n.pcs=100) {
   if (verbose) {
@@ -98,6 +121,10 @@ runConos = function(sobj, batch) {
     
     return(con)
 }
+
+
+
+#################################################### Fastmnn #####################################################################
 
 
 # This function is from https://github.com/theislab/scib-pipeline/blob/0c7be53b1000864fcd31a7b7594f9a5071204233/scripts/integration/integration.R
